@@ -1,0 +1,50 @@
+application-version: '@project.version@'
+application-description: '@project.description@'
+server:
+  port: '8081'
+spring:
+  application:
+    name: ms-usuarios
+  #  cloud:
+  #    config:
+  #      profile: default
+  rabbitmq:
+    port: '5672'
+    host: rabbitmqa.qapruebas.svc.cluster.local
+    username: admin
+    password: mC6Y*Vn2scvP
+    exchange: topic-exchange
+    user-queue: usuario.queue
+    routing-key: "usuario.#"
+    virtual-host: /
+  config:
+    import: optional:configserver:http://localhost:8888
+  datasource:
+    password: SnZz59*b8#Ff
+    username: jonaso
+    url: jdbc:postgresql://192.168.127.181:5433/usuario_database
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: https://keycloakqa.apps.gob.bo/realms/test
+          jwk-set-uri: https://keycloakqa.apps.gob.bo/realms/test/protocol/openid-connect/certs
+
+logging:
+  level:
+    org:
+      keycloak: INFO
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    registry-fetch-interval-seconds: 5
+    service-url:
+      defaultZone: http://eureka:password@discovery-server:8761/eureka
+
+keycloak-client:
+  server-url: https://keycloakqa.apps.gob.bo
+  realm: test
+  client: admin-java
+  client-secret: O6Jxhw2VWPaXozGVG97Hwasbzyaq91UX

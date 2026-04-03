@@ -1,0 +1,9 @@
+version: '2'
+services:
+  ms-usuarios:
+    image: '192.168.101.243:5050/desarollo-qa/ms-usuarios:1.0.0'
+    ports:
+      - "8081:8081"
+    environment:
+      - TZ=America/La_Paz
+    restart: always

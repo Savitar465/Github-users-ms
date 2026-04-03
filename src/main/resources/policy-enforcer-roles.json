@@ -1,0 +1,22 @@
+{
+  "realm": "test",
+  "auth-server-url": "https://keycloakqa.apps.gob.bo/",
+  "resource": "ms-usuarios-local",
+  "credentials": {
+    "secret": "BwiYJVg29lpnaJqfdBUjvrGKa9IL06H1"
+  },
+  "enforcement-mode" : "ENFORCING",
+  "paths": [
+    {
+      "path": "/v1/roles",
+      "methods": [
+        {
+          "method": "GET",
+          "scopes": [
+            "view:rol"
+          ]
+        }
+      ]
+    }
+  ]
+}

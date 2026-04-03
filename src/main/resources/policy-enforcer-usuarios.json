@@ -1,0 +1,94 @@
+{
+  "realm": "test",
+  "auth-server-url": "https://keycloakqa.apps.gob.bo/",
+  "resource": "ms-usuarios-local",
+  "credentials": {
+    "secret": "BwiYJVg29lpnaJqfdBUjvrGKa9IL06H1"
+  },
+  "paths": [
+    {
+      "path": "/v1/usuarios",
+      "methods": [
+        {
+          "method": "GET",
+          "scopes": [
+            "view:user"
+          ]
+        },
+        {
+          "method": "POST",
+          "scopes": [
+            "create:user"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/v1/usuarios/{usuarioId}",
+      "methods": [
+        {
+          "method": "GET",
+          "scopes": [
+            "view:user"
+          ]
+        },
+        {
+          "method": "DELETE",
+          "scopes": [
+            "delete:user"
+          ]
+        },
+        {
+          "method": "PUT",
+          "scopes": [
+            "update:user"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/v1/usuarios/asignar/roles",
+      "methods": [
+        {
+          "method": "POST",
+          "scopes": [
+            "assign:roles"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/v1/usuarios/rango-usuarios",
+      "methods": [
+        {
+          "method": "GET",
+          "scopes": [
+            "view:user"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/v1/usuarios/admin/{usuarioId}",
+      "methods": [
+        {
+          "method": "PUT",
+          "scopes": [
+            "update:user"
+          ]
+        }
+      ]
+    },
+    {
+      "path": "/v1/usuarios/buscar",
+      "methods": [
+        {
+          "method": "GET",
+          "scopes": [
+            "search:user"
+          ]
+        }
+      ]
+    }
+  ]
+}

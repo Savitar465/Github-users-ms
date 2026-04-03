@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: D:\Tools\kompose-windows-amd64.exe convert -f compose.yaml
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: ms-usuarios
+  name: ms-usuarios
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: ms-usuarios
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: D:\Tools\kompose-windows-amd64.exe convert -f compose.yaml
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: ms-usuarios
+    spec:
+      containers:
+        - env:
+            - name: TZ
+              value: America/La_Paz
+          name: ms-usuarios
+          image: srvnexus.apps.gob.bo:5050/desarollo-qa/ms-usuarios:2.5.0-SNAPSHOT
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+          resources: {}
+      hostname: ms-usuarios
+      restartPolicy: Always
+status: {}

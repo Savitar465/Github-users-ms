@@ -1,0 +1,137 @@
+image: docker:dind
+
+services:
+  - name: docker:dind
+    command: [ "--insecure-registry=srvnexus.apps.gob.bo:5050" ]
+
+variables:
+  DOCKER_DRIVER: overlay2
+  MAVEN_OPTS: -DskipTests
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_IMAGE_NAME: desarollo-qa/ms-usuarios
+  IMAGE_VERSION: 2.5.0
+
+stages:
+  - sonarqube-check
+  - build
+  - test
+  - package
+  - deploy
+
+cache:
+  paths:
+    - .m2/repository/
+
+sonarqube-check:
+  stage: sonarqube-check
+  before_script:
+    - cd ./ms-usuarios
+  image: maven:3.9.6-eclipse-temurin-21-alpine
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - mvn $MAVEN_OPTS verify sonar:sonar -s settings.xml
+  allow_failure: true
+  rules:
+    - if: '$PARENT_PIPELINE_SOURCE == "push" && ($CI_PARENT_BRANCH == "main" || $CI_PARENT_BRANCH == "dev") || $PARENT_PIPELINE_SOURCE == "merge_request_event"'
+
+build:
+  before_script:
+    - cd ./ms-usuarios
+  image: maven:3.9.6-eclipse-temurin-21-alpine
+  stage: build
+  script:
+    - if [ "$CI_PARENT_BRANCH" = "main" ]; then
+        echo "Building for production";
+        mvn $MAVEN_OPTS clean package -s settings.xml -P prod;
+      elif [ "$CI_PARENT_BRANCH" = "dev" ]; then
+        echo "Building for development";
+        mvn $MAVEN_OPTS clean package -s settings.xml -P staging;
+      fi
+  artifacts:
+    paths:
+      - ./ms-usuarios/target/*.jar
+  rules:
+    - if: '$PARENT_PIPELINE_SOURCE == "push" && ($CI_PARENT_BRANCH == "main" || $CI_PARENT_BRANCH == "dev")'
+
+
+test:
+  before_script:
+    - cd ./ms-usuarios
+  image: maven:3.9.6-eclipse-temurin-21-alpine
+  stage: test
+  script:
+    - mvn test -s settings.xml -P staging
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - ./ms-usuarios/target/surefire-reports/TEST-*.xml
+        - ./ms-usuarios/target/failsafe-reports/TEST-*.xml
+  rules:
+    - if: '$PARENT_PIPELINE_SOURCE == "push" && ($CI_PARENT_BRANCH == "main" || $CI_PARENT_BRANCH == "dev") || $PARENT_PIPELINE_SOURCE == "merge_request_event"'
+
+package:
+  stage: package
+  before_script:
+    - cd ./ms-usuarios
+    - until docker info; do sleep 1; done
+  script:
+    - echo "Docker package"
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY_URL
+    - if [ "$CI_COMMIT_REF_NAME" = "dev" ]; then
+        echo "Deploying on dev";
+        docker build -t $CI_REGISTRY_URL/$DOCKER_IMAGE_NAME:$IMAGE_VERSION-SNAPSHOT -f $(pwd)/Dockerfile . ;
+        echo "Pushing to dev" ;
+        docker push $CI_REGISTRY_URL/$DOCKER_IMAGE_NAME:$IMAGE_VERSION-SNAPSHOT ;
+      elif [ "$CI_COMMIT_REF_NAME" = "main" ]; then
+        docker build -t $CI_REGISTRY_URL/$DOCKER_IMAGE_NAME:$IMAGE_VERSION -f $(pwd)/Dockerfile . ;
+        docker push $CI_REGISTRY_URL/$DOCKER_IMAGE_NAME:$IMAGE_VERSION ;
+        docker tag $CI_REGISTRY_URL/$DOCKER_IMAGE_NAME:$IMAGE_VERSION $CI_REGISTRY_URL/$DOCKER_IMAGE_NAME:latest ;
+        docker push $CI_REGISTRY_URL/$DOCKER_IMAGE_NAME:latest ;
+      fi
+  rules:
+    - if: '$PARENT_PIPELINE_SOURCE == "push" && ($CI_PARENT_BRANCH == "main" || $CI_PARENT_BRANCH == "dev")'
+
+deploy:
+  stage: deploy
+  image:
+    name: savitar47/kubectl-r:latest
+    entrypoint: [ '' ]
+  variables:
+    SECURE_FILES_DOWNLOAD_PATH: './ms-usuarios/kubeconf/'
+  before_script:
+    - apt-get update && apt-get install -y bash
+    - apt-get update && apt-get install -y curl
+    - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
+  script:
+    - echo $(pwd)
+    - export KUBECONFIG=$(pwd)/ms-usuarios/kubeconf/cibot.yaml # muy necesario
+    - kubectl config use-context cibot@default
+    - kubectl apply -f ms-usuarios/kubeconf/ms-usuarios-deployment.yaml
+    - kubectl apply -f ms-usuarios/kubeconf/ms-usuarios-service.yaml
+    - kubectl get po -o wide
+  rules:
+    - if: '$PARENT_PIPELINE_SOURCE == "push"  && ($CI_PARENT_BRANCH == "main" || $CI_PARENT_BRANCH == "dev")'
+
+#testVuln:
+#  stage: test
+#  before_script:
+#    - until docker info; do sleep 1; done
+#  script:
+#    - if [ ! -d "odc-reports" ]; then
+#        mkdir -p "odc-reports" ;
+#      fi
+#    - docker volume create --driver local -o type=nfs -o o=addr="192.168.99.53,rw,nfsvers=4" -o device=:/home/node/hdd1/share/nvd nfsdata
+#    - docker run --rm -e user=$USER -u $(id -u ${USER}):$(id -g ${USER}) --volume $(pwd)/src:/src:z --volume $(pwd)/odc-reports:/report:z --mount type=volume,source=nfsdata,target=/data owasp/dependency-check:latest --data /data --noupdate --scan /src --format "ALL" --project "objetos web Service" --out /report
+#  artifacts:
+#    paths:
+#      - odc-reports/*.*
+#  rules:
+#    - if: '$PARENT_PIPELINE_SOURCE == "push"  && ($CI_PARENT_BRANCH == "main" || $CI_PARENT_BRANCH == "dev")'
