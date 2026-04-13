@@ -1,43 +1,43 @@
 application-version: '@project.version@'
 application-description: '@project.description@'
 server:
-  port: '8081'
+  port: ${SERVER_PORT:8081}
 spring:
   profiles:
     active: @activatedProperties@
   application:
-    name: ms-usuarios
+    name: ${SPRING_APPLICATION_NAME:ms-usuarios}
   #  cloud:
   #    config:
   #      profile: default
   rabbitmq:
-    port: '5672'
-    host: rabbitmqa.usecc.com
-    username: admin
-    password: mC6Y*Vn2scvP
-    exchange: topic-exchange
-    user-queue: usuario.queue
-    routing-key: "usuario.#"
-    virtual-host: /
+    port: ${RABBITMQ_PORT:5672}
+    host: ${RABBITMQ_HOST:localhost}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    exchange: ${RABBITMQ_EXCHANGE:topic-exchange}
+    user-queue: ${RABBITMQ_USER_QUEUE:usuario.queue}
+    routing-key: ${RABBITMQ_ROUTING_KEY:usuario.#}
+    virtual-host: ${RABBITMQ_VHOST:/}
     listener:
       simple:
         missing-queues-fatal: false
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:file:.env[.properties],optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
   datasource:
     usuarios:
-      url: jdbc:postgresql://192.168.127.181:5433/usuario_database?currentSchema=usuarios_nuevo
-      username: jonaso
-      password: SnZz59*b8#Ff
+      url: ${USUARIOS_DB_URL:jdbc:postgresql://localhost:5432/usuario_database?currentSchema=usuarios_nuevo}
+      username: ${USUARIOS_DB_USERNAME:postgres}
+      password: ${USUARIOS_DB_PASSWORD:postgres}
       driver-class-name: org.postgresql.Driver
       jpa:
         properties:
           hibernate:
             dialect: org.hibernate.dialect.PostgreSQLDialect
     sgsidb:
-      url: jdbc:postgresql://192.168.127.181:5433/sgsidb?currentSchema=pruebas_sgsi
-      username: fernando
-      password: W&WQt^bq3jTP
+      url: ${SGSI_DB_URL:jdbc:postgresql://localhost:5432/sgsidb?currentSchema=pruebas_sgsi}
+      username: ${SGSI_DB_USERNAME:postgres}
+      password: ${SGSI_DB_PASSWORD:postgres}
       driver-class-name: org.postgresql.Driver
       jpa:
         properties:
@@ -52,18 +52,18 @@ spring:
     oauth2:
       resource-server:
         jwt:
-          issuer-uri: https://keycloakqa.apps.gob.bo/realms/test
-          jwk-set-uri: https://keycloakqa.apps.gob.bo/realms/test/protocol/openid-connect/certs
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:https://keycloakqa.apps.gob.bo/realms/test}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:https://keycloakqa.apps.gob.bo/realms/test/protocol/openid-connect/certs}
       client:
         registration:
           keycloak:
-            client-id: ms-usuarios-local
-            client-secret: BwiYJVg29lpnaJqfdBUjvrGKa9IL06H1
-            authorization-grant-type: client_credentials
-            scope: openid
+            client-id: ${KEYCLOAK_CLIENT_ID:ms-usuarios-local}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET:change_me}
+            authorization-grant-type: ${KEYCLOAK_AUTH_GRANT_TYPE:client_credentials}
+            scope: ${KEYCLOAK_SCOPE:openid}
         provider:
           keycloak:
-            issuer-uri: https://keycloakqa.apps.gob.bo/realms/test
+            issuer-uri: ${KEYCLOAK_ISSUER_URI:https://keycloakqa.apps.gob.bo/realms/test}
 logging:
   level:
     org:
@@ -74,14 +74,14 @@ logging:
 
 eureka:
   client:
-    fetch-registry: true
-    register-with-eureka: true
-    registry-fetch-interval-seconds: 5
+    fetch-registry: ${EUREKA_FETCH_REGISTRY:true}
+    register-with-eureka: ${EUREKA_REGISTER_WITH_EUREKA:true}
+    registry-fetch-interval-seconds: ${EUREKA_REGISTRY_FETCH_INTERVAL_SECONDS:5}
     service-url:
-      defaultZone: http://eureka:password@localhost:8761/eureka
+      defaultZone: ${EUREKA_DEFAULT_ZONE:http://eureka:password@localhost:8761/eureka}
 
 keycloak-client:
-  server-url: https://keycloakqa.apps.gob.bo
-  realm: test
-  client: admin-java
-  client-secret: O6Jxhw2VWPaXozGVG97Hwasbzyaq91UX
+  server-url: ${KEYCLOAK_SERVER_URL:https://keycloakqa.apps.gob.bo}
+  realm: ${KEYCLOAK_REALM:test}
+  client: ${KEYCLOAK_ADMIN_CLIENT:admin-java}
+  client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:change_me}

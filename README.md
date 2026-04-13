@@ -5,12 +5,10 @@ Construido con Spring Boot 3.x, persistencia multi-datasource (usuarios + sgsidb
 
 ## 📚 Documentación
 
-| Documento | Descripción | Tiempo |
-|-----------|-------------|--------|
-| **[QUICK_START.md](./QUICK_START.md)** | Setup local + variables entorno | 10 min |
-| **[README-STARTER.md](./README-STARTER.md)** | Onboarding devs (convenciones + Do/Don't) | 15 min |
-| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Diseño, patrones, CRUD canónico (genérico, reutilizable) | 30 min |
-| **[CONTRIBUTING.md](./CONTRIBUTING.md)** | Cómo contribuir (branches, PR, checklist) | 20 min |
+| Documento                                     | Descripción                                              | Tiempo |
+|-----------------------------------------------|----------------------------------------------------------|--------|
+| **[ARCHITECTURE.md](./docs/ARCHITECTURE.md)** | Diseño, patrones, CRUD canónico (genérico, reutilizable) | 30 min |
+| **[CONTRIBUTING.md](./docs/CONTRIBUTING.md)** | Cómo contribuir (branches, PR, checklist)                | 20 min |
 
 ## 📋 Tabla de contenidos
 - [Descripción](#descripción)
@@ -73,29 +71,6 @@ cd ms-usuarios
 
 ### 2. Configurar variables de entorno (desarrollo local)
 Crea un archivo `.env` en la raíz (o configura en IDE):
-
-```bash
-# Datasources
-DB_USUARIOS_URL=jdbc:postgresql://localhost:5433/usuario_database?currentSchema=usuarios_nuevo
-DB_USUARIOS_USER=jonaso
-DB_USUARIOS_PASS=SnZz59*b8#Ff
-
-DB_SGSIDB_URL=jdbc:postgresql://localhost:5433/sgsidb?currentSchema=pruebas_sgsi
-DB_SGSIDB_USER=fernando
-DB_SGSIDB_PASS=W&WQt^bq3jTP
-
-# RabbitMQ
-RABBITMQ_HOST=localhost
-RABBITMQ_PORT=5672
-RABBITMQ_USER=admin
-RABBITMQ_PASS=mC6Y*Vn2scvP
-
-# Keycloak
-KEYCLOAK_URL=https://keycloakqa.apps.gob.bo
-KEYCLOAK_REALM=test
-KEYCLOAK_CLIENT=admin-java
-KEYCLOAK_SECRET=O6Jxhw2VWPaXozGVG97Hwasbzyaq91UX
-```
 
 ### 3. Compilar el proyecto
 ```bash
@@ -327,6 +302,6 @@ Usa template automático (`.github/pull_request_template.md`):
 ---
 
 **Última actualización**: 2026-04-02
-Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md) y [README-STARTER.md](docs/README-STARTER.md).
+Para más detalles, consulta [ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 

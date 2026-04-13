@@ -43,7 +43,6 @@ git checkout -b fix/descripcion-breve
 ### 3. Configura local
 ```bash
 ./mvnw clean install
-# Ver QUICK_START.md para setup completo
 ```
 
 ## Tipos de contribuciones
@@ -75,7 +74,6 @@ Abrir issue para discusión antes de invertir tiempo significativo.
 ### Fase 1: Análisis
 1. **Leer documentación**
    - [ARCHITECTURE.md](ARCHITECTURE.md) - arquitectura y patrones
-   - [README-STARTER.md](README-STARTER.md) - convenciones
    - Código similar existente
 
 2. **Entender el cambio**
@@ -273,8 +271,7 @@ Ir a GitHub, crear PR hacia `develop` o `main`:
 ## Recursos útiles
 
 - [ARCHITECTURE.md](ARCHITECTURE.md) - arquitectura y patrones
-- [README-STARTER.md](README-STARTER.md) - convenciones y Do/Don't
-- [QUICK_START.md](QUICK_START.md) - setup local rápido
+- [GUIA_IA_CODIFICACION.md](CODE-RULES.md) - reglas para generar nuevo codigo con IA
 - [Spring Boot Best Practices](https://spring.io/guides)
 - [OWASP Security Guidelines](https://owasp.org/)
 
