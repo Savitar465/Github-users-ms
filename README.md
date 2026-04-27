@@ -72,6 +72,17 @@ cd ms-usuarios
 ### 2. Configurar variables de entorno (desarrollo local)
 Crea un archivo `.env` en la raíz (o configura en IDE):
 
+```powershell
+Copy-Item .env.example .env
+```
+
+Para otros ambientes:
+
+- `.env.staging` para `staging`
+- `.env.prod` para `prod`
+
+Cada perfil carga su archivo si existe y, si no, usa los valores por defecto definidos en `application.yaml`.
+
 ### 3. Compilar el proyecto
 ```bash
 ./mvnw clean package

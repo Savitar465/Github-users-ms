@@ -15,5 +15,4 @@ public class UsuarioResponse {
     private Date fecCre;
     private String usuMod;
     private Date fecMod;
-    private CargoAreaResponse cargoArea;
 }

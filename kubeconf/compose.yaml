@@ -1,9 +1,53 @@
-version: '2'
 services:
-  ms-usuarios:
-    image: '192.168.101.243:5050/desarollo-qa/ms-usuarios:1.0.0'
-    ports:
-      - "8081:8081"
+  postgres:
+    image: postgres:17-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     environment:
-      - TZ=America/La_Paz
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
     restart: always
+    networks:
+      - keycloak_network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.1
+    command: start
+    environment:
+      KC_HOSTNAME: 192.168.100.150
+      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres/${POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - postgres
+    networks:
+      - keycloak_network
+#  ms-usuarios:
+#    image: '192.168.101.243:5050/desarollo-qa/ms-usuarios:1.0.0'
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      - TZ=America/La_Paz
+#    restart: always
+
+networks:
+  keycloak_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

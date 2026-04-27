@@ -2,18 +2,16 @@ application-version: '@project.version@'
 application-description: '@project.description@'
 server:
   port: ${SERVER_PORT:8081}
+
 spring:
   application:
     name: ${SPRING_APPLICATION_NAME:ms-usuarios}
-  #  cloud:
-  #    config:
-  #      profile: default
   config:
-    import: optional:file:.env.staging[.properties],optional:file:.env[.properties],optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+    import: optional:file:.env.prod[.properties],optional:file:.env[.properties],optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
   datasource:
-    password: ${STAGING_DB_PASSWORD:postgres}
-    username: ${STAGING_DB_USERNAME:postgres}
-    url: ${STAGING_DB_URL:jdbc:postgresql://localhost:5432/usuario_database}
+    password: ${PROD_DB_PASSWORD:postgres}
+    username: ${PROD_DB_USERNAME:postgres}
+    url: ${PROD_DB_URL:jdbc:postgresql://localhost:5432/usuario_database}
   security:
     oauth2:
       resource-server:
@@ -39,3 +37,5 @@ keycloak-client:
   realm: ${KEYCLOAK_REALM:test}
   client: ${KEYCLOAK_ADMIN_CLIENT:admin-java}
   client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:change_me}
+
+

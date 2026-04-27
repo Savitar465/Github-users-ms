@@ -17,6 +17,5 @@ public class UsuarioRolRequest {
     String password;
     String nombres;
     Date fechaNacimiento;
-    String areasAreaId;
     List<RolRequest> roles;
 }

@@ -1,9 +1,9 @@
 {
   "realm": "test",
-  "auth-server-url": "https://keycloakqa.apps.gob.bo/",
+  "auth-server-url": "http://192.168.100.150:8080/",
   "resource": "ms-usuarios-local",
   "credentials": {
-    "secret": "BwiYJVg29lpnaJqfdBUjvrGKa9IL06H1"
+    "secret": "jWWpCy44DBq5ga6G0lkAMC43Em0ZAQFP"
   },
   "paths": [
     {

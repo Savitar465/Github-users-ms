@@ -12,6 +12,5 @@ public class UsuarioRequest {
     String email;
     String username;
     String nombres;
-    String cargoAreaId;
     String password;
 }

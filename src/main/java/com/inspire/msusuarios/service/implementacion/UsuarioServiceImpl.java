@@ -7,14 +7,11 @@ import com.inspire.mscommon.dto.response.EliminarResponse;
 import com.inspire.mscommon.exceptionhandler.exceptions.EntityConflictException;
 import com.inspire.mscommon.exceptionhandler.exceptions.EntityNotFoundException;
 import com.inspire.mscommon.model.Transaccion;
-import com.inspire.msusuarios.dao.usuarios.UsuarioDao;
+import com.inspire.msusuarios.dao.UsuarioDao;
 import com.inspire.msusuarios.dto.request.UsuarioRequest;
-import com.inspire.msusuarios.model.sgsidb.UsuariosSgsi;
-import com.inspire.msusuarios.model.usuarios.Usuario;
-import com.inspire.msusuarios.service.contratos.CargoAreaService;
+import com.inspire.msusuarios.model.Usuario;
 import com.inspire.msusuarios.service.contratos.KeycloakService;
 import com.inspire.msusuarios.service.contratos.UsuarioService;
-import com.inspire.msusuarios.service.contratos.sgsidb.UsersService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -28,15 +25,11 @@ import org.springframework.stereotype.Service;
 public class UsuarioServiceImpl implements UsuarioService {
     private final KeycloakService keycloakService;
     private final UsuarioDao usuarioDao;
-    private final CargoAreaService cargoAreaService;
-    private final UsersService usersService;
 
 
-    public UsuarioServiceImpl(UsersService usersService, UsuarioDao usuarioDao, KeycloakService keycloakService, CargoAreaService cargoAreaService) {
+    public UsuarioServiceImpl(UsuarioDao usuarioDao, KeycloakService keycloakService) {
         this.usuarioDao = usuarioDao;
         this.keycloakService = keycloakService;
-        this.cargoAreaService = cargoAreaService;
-        this.usersService = usersService;
     }
 
     @Override
@@ -64,11 +57,9 @@ public class UsuarioServiceImpl implements UsuarioService {
             log.error("Error al crear el usuario en Keycloak");
             throw new EntityConflictException("Error al crear el usuario en Keycloak");
         }
-        UsuariosSgsi usuariosSgsi = usersService.crearUsers(usuarioRequest, transaction);
         transaction.setTrUsuarioId(userRepresentation.getId());
         Usuario usuario = Usuario.builder()
                 .usuarioKyId(userRepresentation.getId())
-                .idSgsi(usuariosSgsi.getId())
                 .email(usuarioRequest.getEmail())
                 .username(usuarioRequest.getUsername())
                 .nombres(usuarioRequest.getNombres())
@@ -102,7 +93,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public Usuario editarUsuario(String usuarioKyId, UsuarioRequest usuarioRequest, Transaccion transaccion) {
         Usuario editarUsuario = obtenerUsernamePorIdUsuario(usuarioKyId);
-        usersService.editarUsers(editarUsuario.getIdSgsi(), usuarioRequest, transaccion);
         if (editarUsuario.getEstado().equals(EstadoAbstract.INACTIVO)) {
             log.error("El usuario con id: {} se encuentra eliminado", usuarioKyId);
             throw new EntityConflictException("El usuario con id: " + usuarioKyId + " se encuentra eliminado");
@@ -111,14 +101,11 @@ public class UsuarioServiceImpl implements UsuarioService {
             editarUsuario.setEmail(usuarioRequest.getEmail());
             editarUsuario.setNombres(usuarioRequest.getNombres());
             editarUsuario.setApellidos(usuarioRequest.getApellidos());
-            if(usuarioRequest.getCargoAreaId()!=null){
-                editarUsuario.setCargoArea(cargoAreaService.getCargoArea(usuarioRequest.getCargoAreaId()));
-            }
             editarUsuario.setUsuMod(transaccion.getTrUsuarioId());
             editarUsuario.setFecMod(transaccion.getTrFecha());
-             Usuario prueba = usuarioDao.save(editarUsuario);
-             log.info(prueba.getUsuarioKyId());
-             return prueba;
+            Usuario prueba = usuarioDao.save(editarUsuario);
+            log.info(prueba.getUsuarioKyId());
+            return prueba;
         }
     }
 

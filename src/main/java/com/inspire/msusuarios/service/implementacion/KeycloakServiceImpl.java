@@ -1,9 +1,9 @@
 package com.inspire.msusuarios.service.implementacion;
 
+import com.inspire.msusuarios.dto.request.RolRequest;
 import com.inspire.msusuarios.dto.request.UsuarioRequest;
 import com.inspire.mscommon.dto.response.EliminarResponse;
 import com.inspire.mscommon.exceptionhandler.exceptions.EntityConflictException;
-import com.inspire.msusuarios.dto.request.RolRequest;
 import com.inspire.msusuarios.dto.request.UsuarioRolRequest;
 import com.inspire.msusuarios.service.contratos.KeycloakService;
 import com.inspire.msusuarios.util.errorhandling.exceptions.KeycloakException;
@@ -142,11 +142,4 @@ public class KeycloakServiceImpl implements KeycloakService {
         return null;
     }
 
-    public void adicionarAtributoId(String username, String id) {
-        UserRepresentation usuarioR = obtenerUsuarioPorUsername(username);
-        UserResource userResource = keycloak.realm(realm).users().get(usuarioR.getId());
-        UserRepresentation user = userResource.toRepresentation();
-        user.singleAttribute("user_db_id", id);
-        userResource.update(user);
-    }
 }

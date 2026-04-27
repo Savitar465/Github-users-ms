@@ -2,52 +2,26 @@ application-version: '@project.version@'
 application-description: '@project.description@'
 server:
   port: ${SERVER_PORT:8081}
+
 spring:
+  config:
+    import: optional:file:.env[.properties]
   profiles:
     active: @activatedProperties@
   application:
     name: ${SPRING_APPLICATION_NAME:ms-usuarios}
-  #  cloud:
-  #    config:
-  #      profile: default
-  rabbitmq:
-    port: ${RABBITMQ_PORT:5672}
-    host: ${RABBITMQ_HOST:localhost}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
-    exchange: ${RABBITMQ_EXCHANGE:topic-exchange}
-    user-queue: ${RABBITMQ_USER_QUEUE:usuario.queue}
-    routing-key: ${RABBITMQ_ROUTING_KEY:usuario.#}
-    virtual-host: ${RABBITMQ_VHOST:/}
-    listener:
-      simple:
-        missing-queues-fatal: false
-  config:
-    import: optional:file:.env[.properties],optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}
+
   datasource:
-    usuarios:
-      url: ${USUARIOS_DB_URL:jdbc:postgresql://localhost:5432/usuario_database?currentSchema=usuarios_nuevo}
-      username: ${USUARIOS_DB_USERNAME:postgres}
-      password: ${USUARIOS_DB_PASSWORD:postgres}
-      driver-class-name: org.postgresql.Driver
-      jpa:
-        properties:
-          hibernate:
-            dialect: org.hibernate.dialect.PostgreSQLDialect
-    sgsidb:
-      url: ${SGSI_DB_URL:jdbc:postgresql://localhost:5432/sgsidb?currentSchema=pruebas_sgsi}
-      username: ${SGSI_DB_USERNAME:postgres}
-      password: ${SGSI_DB_PASSWORD:postgres}
-      driver-class-name: org.postgresql.Driver
-      jpa:
-        properties:
-          hibernate:
-            dialect: org.hibernate.dialect.PostgreSQLDialect
-  #  datasource:
-  #    password: SnZz59*b8#Ff
-  #    username: jonaso
-  ##    url: jdbc:postgresql://192.168.127.181:5433/usuario_database
-  #    url: jdbc:postgresql://192.168.127.181:5433/usuario_database?currentSchema=usuarios_nuevo
+    url: ${USUARIOS_DB_URL:jdbc:postgresql://localhost:5432/usuario_database?currentSchema=usuarios_nuevo}
+    username: ${USUARIOS_DB_USERNAME:postgres}
+    password: ${USUARIOS_DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+       hibernate:
+         dialect: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+
   security:
     oauth2:
       resource-server:

@@ -1,8 +1,8 @@
 package com.inspire.msusuarios.service.contratos;
 
+import com.inspire.msusuarios.dto.request.RolRequest;
 import com.inspire.msusuarios.dto.request.UsuarioRequest;
 import com.inspire.mscommon.dto.response.EliminarResponse;
-import com.inspire.msusuarios.dto.request.RolRequest;
 import com.inspire.msusuarios.dto.request.UsuarioRolRequest;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -63,8 +63,8 @@ public interface KeycloakService {
      * @param userDTO usuario que contiene los datos a actualizar
      * @return objeto tipo userRepresentation
      */
-    UserRepresentation updateUserKeycloakAdmin(String userId, List<RolRequest> roles, 
-    UsuarioRolRequest userDTO, String username);
+    UserRepresentation updateUserKeycloakAdmin(String userId, List<RolRequest> roles,
+                                               UsuarioRolRequest userDTO, String username);
 
      /**
      * Método que obtiene los roles de un usuario
@@ -73,13 +73,4 @@ public interface KeycloakService {
      * @return devuelve la lista de roles obtenidos
      */
     List<RoleRepresentation> obtenerRolesUsuario(String userId);
-
-
-     /**
-     * Método que adiciona el atributo id a un usuario
-     *
-     * @param username  username del usuario a modificar
-     * @param id  id a asignar
-     */
-    void adicionarAtributoId(String username, String id);
 }

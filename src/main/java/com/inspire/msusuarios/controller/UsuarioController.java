@@ -4,7 +4,6 @@ import com.inspire.mscommon.criteria.modelCriteria.SearchRequest;
 import com.inspire.mscommon.dto.response.EliminarResponse;
 import com.inspire.mscommon.model.Transaccion;
 import com.inspire.mscommon.util.TransaccionUtil;
-import com.inspire.msusuarios.config.amqp.RabbitMQProducer;
 import com.inspire.msusuarios.dto.request.UsuarioRequest;
 import com.inspire.msusuarios.dto.response.UsuarioResponse;
 import com.inspire.msusuarios.mapper.UsuarioMapper;
@@ -38,14 +37,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "v1/usuarios")
 @Slf4j
 public class UsuarioController {
-
-    private static final String ROUTING_KEY = "usuario.";
     private final UsuarioService usuarioService;
-    private final RabbitMQProducer rabbitMQProducer;
 
-    public UsuarioController(UsuarioService usuarioService, RabbitMQProducer rabbitMQProducer) {
+    public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
-        this.rabbitMQProducer = rabbitMQProducer;
     }
 
     /**
@@ -137,7 +132,6 @@ public class UsuarioController {
         Transaccion transaccion = TransaccionUtil.crearTransaccion(request, JwtExtractUserUtil.extractUserDbId());
         UsuarioResponse usuario = UsuarioMapper.INSTANCE
                 .usuarioToUsuarioResponse(usuarioService.crearUsuario(usuarioRequest, transaccion));
-        rabbitMQProducer.sendToRabbit(ROUTING_KEY.concat("creado"), usuario);
         return new ResponseEntity<>(usuario, HttpStatus.CREATED);
     }
 

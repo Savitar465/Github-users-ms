@@ -4,7 +4,7 @@ import com.inspire.mscommon.criteria.modelCriteria.SearchRequest;
 import com.inspire.mscommon.dto.response.EliminarResponse;
 import com.inspire.mscommon.model.Transaccion;
 import com.inspire.msusuarios.dto.request.UsuarioRequest;
-import com.inspire.msusuarios.model.usuarios.Usuario;
+import com.inspire.msusuarios.model.Usuario;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 

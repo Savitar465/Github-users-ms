@@ -1,32 +1,12 @@
 {
-  "realm": "test",
-  "auth-server-url": "https://keycloakqa.apps.gob.bo/",
-  "resource": "ms-usuarios-local",
+  "realm": "Github",
+  "auth-server-url": "http://192.168.100.150:8080/",
+  "resource": "users-ms",
   "credentials": {
-    "secret": "BwiYJVg29lpnaJqfdBUjvrGKa9IL06H1"
+    "secret": "jWWpCy44DBq5ga6G0lkAMC43Em0ZAQFP"
   },
   "enforcement-mode" : "ENFORCING",
   "paths": [
-    {
-      "path": "/v1/equipos/*",
-      "enforcement-mode" : "DISABLED"
-    },
-    {
-      "path": "/v1/cargo-areas/*",
-      "enforcement-mode" : "DISABLED"
-    },
-    {
-      "path": "/v1/sistemas/*",
-      "enforcement-mode" : "DISABLED"
-    },
-    {
-      "path": "/v1/areas/*",
-      "enforcement-mode" : "DISABLED"
-    },
-    {
-      "path": "/v1/roles/*",
-      "enforcement-mode" : "DISABLED"
-    },
     {
       "path": "/v1/clientes/*",
       "enforcement-mode" : "DISABLED"

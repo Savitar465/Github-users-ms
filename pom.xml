@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.inspire</groupId>
-    <artifactId>ms-usuarios</artifactId>
+    <artifactId>Github-users-ms</artifactId>
     <version>2.5.0</version>
     <name>ms-usuarios</name>
     <description>ms-usuarios</description>
@@ -27,10 +27,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -64,17 +60,10 @@
             <version>2.21.1</version>
         </dependency>
 
-        <!--Rabbit MQ libreria-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-amqp</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -229,13 +218,6 @@
         </plugins>
         <finalName>ms-usuarios</finalName>
     </build>
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>nexus</id>-->
-<!--            <name>nexus</name>-->
-<!--            <url>http://srvnexus.apps.gob.bo:8081/repository/maven-public/</url>-->
-<!--        </repository>-->
-<!--    </repositories>-->
     <profiles>
         <profile>
             <id>default</id>
