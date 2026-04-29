@@ -3,18 +3,18 @@
   "sources": ["model"],
   "projections": {
     "source": {},
-    "auth-public": {
+    "users": {
       "plugins": {
         "openapi": {
-          "service": "com.minigithub.auth#AuthPublicApi",
+          "service": "com.github.users#UsersApi",
           "protocol": "aws.protocols#restJson1"
         }
       }
     },
-    "auth-account": {
+    "keycloak": {
       "plugins": {
         "openapi": {
-          "service": "com.minigithub.auth#AuthAccountApi",
+          "service": "com.github.keycloak#KeycloakManagementApi",
           "protocol": "aws.protocols#restJson1"
         }
       }

@@ -1,8 +1,16 @@
 $version: "2"
 
-namespace com.minigithub.auth
+namespace com.github.users
 
-enum OAuthProvider {
-    GITHUB = "github"
-    GOOGLE = "google"
+use com.github.common#StringMap
+
+@documentation("Tipos de búsqueda para filtrados avanzados")
+structure SearchRequest {
+    @required
+    page: Integer
+
+    @required
+    size: Integer
+
+    filters: StringMap
 }

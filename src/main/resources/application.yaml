@@ -28,16 +28,7 @@ spring:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:https://keycloakqa.apps.gob.bo/realms/test}
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:https://keycloakqa.apps.gob.bo/realms/test/protocol/openid-connect/certs}
-      client:
-        registration:
-          keycloak:
-            client-id: ${KEYCLOAK_CLIENT_ID:ms-usuarios-local}
-            client-secret: ${KEYCLOAK_CLIENT_SECRET:change_me}
-            authorization-grant-type: ${KEYCLOAK_AUTH_GRANT_TYPE:client_credentials}
-            scope: ${KEYCLOAK_SCOPE:openid}
-        provider:
-          keycloak:
-            issuer-uri: ${KEYCLOAK_ISSUER_URI:https://keycloakqa.apps.gob.bo/realms/test}
+
 logging:
   level:
     org:
@@ -45,14 +36,6 @@ logging:
       springframework:
         security: DEBUG
 
-
-eureka:
-  client:
-    fetch-registry: ${EUREKA_FETCH_REGISTRY:true}
-    register-with-eureka: ${EUREKA_REGISTER_WITH_EUREKA:true}
-    registry-fetch-interval-seconds: ${EUREKA_REGISTRY_FETCH_INTERVAL_SECONDS:5}
-    service-url:
-      defaultZone: ${EUREKA_DEFAULT_ZONE:http://eureka:password@localhost:8761/eureka}
 
 keycloak-client:
   server-url: ${KEYCLOAK_SERVER_URL:https://keycloakqa.apps.gob.bo}

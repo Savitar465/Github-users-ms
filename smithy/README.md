@@ -1,6 +1,6 @@
-# GitHub — Proyecto Smithy
+# Ms-Usuarios — Proyecto Smithy
 
-Modelo de API REST en Smithy 2.0 para el dominio de archivos del proyecto GitHub.
+Modelo de API REST en Smithy 2.0 para el dominio de usuarios del microservicio `Ms-Usuarios`, con separación explícita entre `usuarios`, `keycloak` y `common`.
 
 ## Visión general
 
@@ -22,17 +22,18 @@ smithy/
 ├── model/
 │   ├── common/
 │   │   └── common.smithy
-│   └── files/
+│   └── users/
 │       ├── services/
-│       │   └── files-api.smithy
+│       │   ├── usuarios.smithy
+│       │   └── keycloak.smithy
 │       ├── operations/
-│       │   ├── content-operations.smithy
-│       │   ├── write-operations.smithy
-│       │   └── commits-operations.smithy
-│       └── structures/
-│           ├── content-structures.smithy
-│           ├── write-structures.smithy
-│           └── commits-structures.smithy
+│       │   ├── usuarios.smithy
+│       │   ├── keycloak-clients.smithy
+│       │   ├── keycloak-roles.smithy
+│       │   └── keycloak-permissions.smithy
+│       └── types/
+│           ├── oauth.smithy
+│           └── token.smithy
 └── README.md
 ```
 
@@ -46,7 +47,7 @@ smithy/
 ### 1) Validar el modelo Smithy
 
 ```powershell
-Set-Location "C:\Projects\Github-files-ms\smithy"
+Set-Location "C:\Projects\Ms-Usuarios\smithy"
 .\gradlew.bat smithyBuild --no-daemon
 ```
 
@@ -55,7 +56,7 @@ Esto valida el modelo y genera las proyecciones configuradas en `smithy-build.js
 ### 2) Generar OpenAPI
 
 ```powershell
-Set-Location "C:\Projects\Github-files-ms\smithy"
+Set-Location "C:\Projects\Ms-Usuarios\smithy"
 .\gradlew.bat smithyBuild --no-daemon
 ```
 
@@ -64,14 +65,14 @@ La salida OpenAPI queda en `build/smithyprojections/.../openapi/`.
 ### 3) Generar código Spring / TypeScript desde OpenAPI
 
 ```powershell
-Set-Location "C:\Projects\Github-files-ms\smithy"
+Set-Location "C:\Projects\Ms-Usuarios\smithy"
 .\gradlew.bat generateAllCodegen --no-daemon
 ```
 
 O, si quieres por separado:
 
 ```powershell
-Set-Location "C:\Projects\Github-files-ms\smithy"
+Set-Location "C:\Projects\Ms-Usuarios\smithy"
 .\gradlew.bat generateAllTypeScriptClients --no-daemon
 .\gradlew.bat generateAllJavaServers --no-daemon
 ```
@@ -79,8 +80,8 @@ Set-Location "C:\Projects\Github-files-ms\smithy"
 ## Salidas generadas
 
 - **OpenAPI**: `build/smithyprojections/<project>/<projection>/openapi/*.openapi.json`
-- **Cliente TypeScript**: `build/generated/typescript/files-client`
-- **Server Java Spring**: `build/generated/spring/files-module`
+- **Cliente TypeScript**: `build/generated/typescript/usuarios-client` y `build/generated/typescript/keycloak-client`
+- **Server Java Spring**: `build/generated/spring/usuarios-module` y `build/generated/spring/keycloak-module`
 
 Cada módulo Spring es completamente independiente e incluye:
 - Controllers y delegados (delegate pattern)
@@ -89,29 +90,47 @@ Cada módulo Spring es completamente independiente e incluye:
 - `pom.xml` con todas las dependencias necesarias
 - Aplicación Spring Boot autoejecutable
 
-Estructura de paquetes en cada módulo:
+Estructura de paquetes en cada módulo generado:
 ```
-com.smithy.g.files.server.files.api      (controllers)
-com.smithy.g.files.server.files.model    (DTOs y enums)
-com.smithy.g.files.server.files.invoker  (app principal)
-org.openapitools.configuration             (enum converters)
+com.github.users.usuarios.server.usuarios.api      (controllers)
+com.github.users.usuarios.server.usuarios.model    (DTOs)
+com.github.users.usuarios.server.usuarios.invoker  (app principal)
+
+com.github.users.keycloak.server.keycloak.api      (controllers)
+com.github.users.keycloak.server.keycloak.model    (DTOs)
+com.github.users.keycloak.server.keycloak.invoker  (app principal)
+
+org.openapitools.configuration                     (configuración común)
 ```
 
-## Generación del dominio Files
+## Generación por dominio
 
-El proyecto genera un único módulo Spring para `FilesApi`.
+El proyecto genera dos módulos Spring separados:
 
-Generar directamente el módulo Files:
+- `UsuariosApi` para el dominio de usuarios
+- `KeycloakManagementApi` para el dominio de Keycloak
+
+Generar cada uno de forma independiente:
 
 ```powershell
-.\gradlew.bat generateFilesJavaServer --no-daemon
-.\gradlew.bat generateFilesTypeScriptClient --no-daemon
+Set-Location "C:\Projects\Ms-Usuarios\smithy"
+.\gradlew.bat generateUsuariosJavaServer --no-daemon
+.\gradlew.bat generateKeycloakJavaServer --no-daemon
+```
+
+Generar clientes TypeScript:
+
+```powershell
+Set-Location "C:\Projects\Ms-Usuarios\smithy"
+.\gradlew.bat generateUsuariosTypeScriptClient --no-daemon
+.\gradlew.bat generateKeycloakTypeScriptClient --no-daemon
 ```
 
 ## Convenciones del modelo
 
-- `FilesApi` expone dos variantes para contenido: por `path` query y por ruta explícita `{filePath+}`.
-- Algunos generadores OpenAPI emiten advertencias con labels greedies (`{filePath+}`), pero el modelo valida correctamente.
+- `UsuariosApi` cubre el CRUD de usuarios y la búsqueda avanzada.
+- `KeycloakManagementApi` cubre clientes, roles y permisos de Keycloak.
+- Los shapes compartidos viven en `com.github.users.common`.
 
 ## Autenticación
 
@@ -123,4 +142,3 @@ Header requerido:
 Authorization: Bearer <jwt_token>
 ```
 
-El token se obtiene en `POST /v1/auth/login`.

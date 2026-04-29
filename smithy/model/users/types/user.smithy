@@ -1,31 +1,22 @@
 $version: "2"
 
-namespace com.minigithub.auth
+namespace com.github.users
 
-use com.minigithub.common#Email
-use com.minigithub.common#Url
-use com.minigithub.common#Username
-use com.minigithub.common#Uuid
-
-structure UserDTO {
+structure UsuarioDTO {
     @required
-    id: Uuid
+    id: String
 
     @required
-    username: Username
+    nombre: String
 
     @required
-    email: Email
+    apellido: String
 
-    avatarUrl: Url
+    @required
+    email: String
 
-    @length(max: 500)
-    bio: String
-
-    @length(max: 100)
-    location: String
-
-    website: Url
+    @required
+    usuario: String
 
     @required
     createdAt: String

@@ -34,11 +34,11 @@ def generatedTypeScriptBase = layout.buildDirectory.dir("generated/typescript").
 def generatedSpringBase = layout.buildDirectory.dir("generated/spring").get().asFile.absolutePath
 
 def codegenTargets = [
-        [id: "authPublic", projection: "auth-public", specName: "AuthPublicApi", packageBase: "com.smithy.minigithub.auth",
-         mavenGroupId: "com.minigithub.auth", mavenArtifactId: "auth-public-service", mavenVersion: "1.0.0",
+        [id: "users", projection: "users", specName: "UsersApi", packageBase: "com.github.g.users",
+         mavenGroupId: "com.github.users", mavenArtifactId: "github-users", mavenVersion: "1.0.0",
          generateTypeScriptClient: true, generateJavaServer: true],
-        [id: "authAccount", projection: "auth-account", specName: "AuthAccountApi", packageBase: "com.smithy.minigithub.auth",
-         mavenGroupId: "com.minigithub.auth", mavenArtifactId: "auth-account-service", mavenVersion: "1.0.0",
+        [id: "keycloak", projection: "keycloak", specName: "KeycloakManagementApi", packageBase: "com.github.g.users",
+         mavenGroupId: "com.github.keycloak", mavenArtifactId: "github-keycloak", mavenVersion: "1.0.0",
          generateTypeScriptClient: true, generateJavaServer: true],
 ]
 
@@ -90,25 +90,34 @@ codegenTargets.each { target ->
                     "--invoker-package", "${target.packageBase}.server.${target.id}.invoker",
                     "--additional-properties", "groupId=${target.mavenGroupId},artifactId=${target.mavenArtifactId},artifactVersion=${target.mavenVersion},delegatePattern=true,useSpringBoot3=true,useJakartaEe=true,dateLibrary=java8,hideGenerationTimestamp=true"
             ]
+            doLast {
+                def propsFile = file("${domainModuleBase}/src/main/resources/application.properties")
+                if (propsFile.exists()) {
+                    def filtered = propsFile.readLines()
+                            .findAll { it?.trim() != 'spring.jackson.serialization.WRITE_DATES_AS_TIMESTAMPS=false' }
+                            .join(System.lineSeparator())
+                    propsFile.text = filtered ? filtered + System.lineSeparator() : ''
+                }
+            }
         }
     }
 }
 
 tasks.register("generateAllTypeScriptClients") {
     group = "code generation"
-    description = "Genera los clientes TypeScript de las APIs de autenticacion"
+    description = "Genera los clientes TypeScript de las APIs de usuarios y Keycloak"
     dependsOn typeScriptClientTaskNames.collect { tasks.named(it) }
 }
 
 tasks.register("generateAllJavaServers") {
     group = "code generation"
-    description = "Genera los servidores Java con stubs (delegate pattern) para las APIs de autenticacion"
+    description = "Genera los servidores Java con stubs (delegate pattern) para las APIs de usuarios y Keycloak"
     dependsOn javaServerTaskNames.collect { tasks.named(it) }
 }
 
 tasks.register("generateAllCodegen") {
     group = "code generation"
-    description = "Genera clientes TypeScript y servers Java para las APIs de autenticacion"
+    description = "Genera clientes TypeScript y servers Java para las APIs de usuarios y Keycloak"
     dependsOn tasks.named("generateAllTypeScriptClients"), tasks.named("generateAllJavaServers")
 }
 

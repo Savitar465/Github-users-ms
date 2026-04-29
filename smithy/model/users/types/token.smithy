@@ -1,12 +1,10 @@
 $version: "2"
 
-namespace com.minigithub.auth
-
-use com.minigithub.common#JwtToken
+namespace com.github.users
 
 structure AuthTokenDTO {
     @required
-    accessToken: JwtToken
+    accessToken: String
 
     @required
     expiresIn: Integer

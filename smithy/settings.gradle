@@ -6,4 +6,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "github-files-ms-smithy"
+rootProject.name = "github-users-ms-smithy"

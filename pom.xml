@@ -5,17 +5,16 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
+        <version>4.0.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.inspire</groupId>
-    <artifactId>Github-users-ms</artifactId>
-    <version>2.5.0</version>
-    <name>ms-usuarios</name>
-    <description>ms-usuarios</description>
+    <groupId>com.githubx</groupId>
+    <artifactId>users-ms</artifactId>
+    <version>1.0.0</version>
+    <name>Github-users-ms</name>
+    <description>Github-users-ms</description>
     <properties>
-        <java.version>21</java.version>
-        <spring-cloud.version>2023.0.0</spring-cloud.version>
+        <java.version>25</java.version>
         <lombok-map-struct-binding.version>0.2.0</lombok-map-struct-binding.version>
         <hibernate-jpamodelgen.version>6.4.4.Final</hibernate-jpamodelgen.version>
         <sonar.projectKey>Microservicios_ms_usuarios</sonar.projectKey>
@@ -27,16 +26,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-policy-enforcer</artifactId>
-            <version>26.0.1</version>
         </dependency>
 
         <!--Database librarias-->
@@ -61,16 +50,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -125,21 +108,22 @@
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>31.1-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>com.inspire</groupId>
-            <artifactId>common-service</artifactId>
-            <version>1.0.0</version>
-        </dependency>
         <!--        Keycloak admin client-->
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
             <version>26.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-policy-enforcer</artifactId>
+            <version>26.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.inspire</groupId>
+            <artifactId>common-service</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <!--        Security -->
@@ -158,17 +142,6 @@
         </dependency>
 
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-dependencies</artifactId>
-                <version>${spring-cloud.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <plugins>
@@ -216,7 +189,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>ms-usuarios</finalName>
+        <finalName>Github-usuarios-ms</finalName>
     </build>
     <profiles>
         <profile>
