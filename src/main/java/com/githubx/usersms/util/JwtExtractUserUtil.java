@@ -11,9 +11,11 @@ public class JwtExtractUserUtil {
     }
     public static String extractUserDbId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication instanceof AnonymousAuthenticationToken)) {
-            Jwt principal = (Jwt) authentication.getPrincipal();
-            return principal.getClaimAsString("user_db_id");
+        if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof Jwt jwt) {
+                return jwt.getClaimAsString("user_db_id");
+            }
         }
         return null;
     }
