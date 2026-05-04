@@ -37,9 +37,6 @@ def codegenTargets = [
         [id: "users", projection: "users", specName: "UsersApi", packageBase: "com.github.g.users",
          mavenGroupId: "com.github.users", mavenArtifactId: "github-users", mavenVersion: "1.0.0",
          generateTypeScriptClient: true, generateJavaServer: true],
-        [id: "keycloak", projection: "keycloak", specName: "KeycloakManagementApi", packageBase: "com.github.g.users",
-         mavenGroupId: "com.github.keycloak", mavenArtifactId: "github-keycloak", mavenVersion: "1.0.0",
-         generateTypeScriptClient: true, generateJavaServer: true],
 ]
 
 def typeScriptClientTaskNames = []

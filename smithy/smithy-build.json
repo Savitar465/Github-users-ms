@@ -10,14 +10,6 @@
           "protocol": "aws.protocols#restJson1"
         }
       }
-    },
-    "keycloak": {
-      "plugins": {
-        "openapi": {
-          "service": "com.github.keycloak#KeycloakManagementApi",
-          "protocol": "aws.protocols#restJson1"
-        }
-      }
     }
   }
 }

@@ -2,21 +2,21 @@ $version: "2"
 
 namespace com.github.users
 
-structure UsuarioDTO {
+structure UserDTO {
     @required
     id: String
 
     @required
-    nombre: String
+    firstName: String
 
     @required
-    apellido: String
+    lastName: String
 
     @required
     email: String
 
     @required
-    usuario: String
+    username: String
 
     @required
     createdAt: String
