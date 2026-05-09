@@ -6,23 +6,28 @@ import com.githubx.usersms.util.errorhandling.exceptions.EntityConflictException
 import com.githubx.usersms.util.errorhandling.exceptions.EntityDeletedException;
 import com.githubx.usersms.util.errorhandling.exceptions.EntityNotFoundException;
 import jakarta.ws.rs.InternalServerErrorException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
 public class MsUsersControllerAdvice extends ResponseEntityExceptionHandler {
 
-    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
-    public ResponseEntity<ErrorResponse> handleMethodNotAllowedException(Exception e) {
-        HttpStatus status = HttpStatus.METHOD_NOT_ALLOWED;
-        return new ResponseEntity<>(new ErrorResponse(status, e.getMessage(), StackTraceUtil.getStackTrace(e)), status);
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
+                                                                         HttpHeaders headers,
+                                                                         HttpStatusCode status,
+                                                                         WebRequest request) {
+        HttpStatus responseStatus = HttpStatus.METHOD_NOT_ALLOWED;
+        return new ResponseEntity<>(new ErrorResponse(responseStatus, ex.getMessage(), StackTraceUtil.getStackTrace(ex)), responseStatus);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -32,11 +37,13 @@ public class MsUsersControllerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(new ErrorResponse(status, e.getMessage(), StackTraceUtil.getStackTrace(e)), status);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingBadRequestExceptions(Exception e) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(new ErrorResponse(status, e.getMessage(), StackTraceUtil.getStackTrace(e)), status);
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
+                                                                           HttpHeaders headers,
+                                                                           HttpStatusCode status,
+                                                                           WebRequest request) {
+        HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(new ErrorResponse(responseStatus, ex.getMessage(), StackTraceUtil.getStackTrace(ex)), responseStatus);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
