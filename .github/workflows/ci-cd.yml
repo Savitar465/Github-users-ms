@@ -34,6 +34,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Set up Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('smithy/**/*.gradle', 'smithy/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Make gradlew executable
+        run: chmod +x smithy/gradlew
+
+      - name: Generate Smithy Java sources
+        run: ./gradlew generateUsersJavaServer
+        working-directory: smithy
+
       - name: Make mvnw executable
         run: chmod +x mvnw
 
@@ -66,6 +83,23 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+
+      - name: Set up Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('smithy/**/*.gradle', 'smithy/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Make gradlew executable
+        run: chmod +x smithy/gradlew
+
+      - name: Generate Smithy Java sources
+        run: ./gradlew generateUsersJavaServer
+        working-directory: smithy
 
       - name: Make mvnw executable
         run: chmod +x mvnw
