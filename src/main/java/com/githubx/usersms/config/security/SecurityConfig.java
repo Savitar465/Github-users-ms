@@ -37,7 +37,7 @@ public class SecurityConfig {
             policy.getPaths().addAll(policyUsers.getPaths());
             this.combinedPolicy = policy;
         } catch (IOException e) {
-            throw new RuntimeException("Error loading policy files", e);
+            throw new IllegalArgumentException("Error loading policy files", e);
         }
     }
 

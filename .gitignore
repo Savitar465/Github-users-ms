@@ -36,3 +36,8 @@ build/
 .env.*
 !.env.example
 
+!/src/main/resources/policy-enforcer-allow.json
+
+!/src/main/resources/policy-enforcer-roles.json
+
+!/src/main/resources/policy-enforcer-usuarios.json

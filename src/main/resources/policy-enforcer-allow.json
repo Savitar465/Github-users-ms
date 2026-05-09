@@ -3,7 +3,7 @@
   "auth-server-url": "http://192.168.100.150:8080/",
   "resource": "users-ms",
   "credentials": {
-    "secret": "jWWpCy44DBq5ga6G0lkAMC43Em0ZAQFP"
+    "secret": ""
   },
   "enforcement-mode" : "ENFORCING",
   "paths": [
