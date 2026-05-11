@@ -1,6 +1,5 @@
 package com.githubx.usersms.controller;
 
-import com.github.g.users.server.users.api.V1Api;
 import com.github.g.users.server.users.model.DeleteResponse;
 import com.github.g.users.server.users.model.UserResponse;
 import com.githubx.usersms.criteria.models.SearchRequest;
@@ -17,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +30,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "v1/users")
 @Slf4j
-public class UserController implements V1Api {
+public class UserController {
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -66,7 +64,8 @@ public class UserController implements V1Api {
                     )
             }
     )
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER', 'VIEWER')")
+    @GetMapping(value = "/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserResponse>> getListUsers(
             @RequestParam(name = "page") @Min(0) int page,
             @RequestParam(name = "pageSize") @Positive int pageSize) {
@@ -96,7 +95,8 @@ public class UserController implements V1Api {
                     )
             }
     )
-    @GetMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER', 'VIEWER')")
+    @GetMapping(value = "/v1/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> getUser(@PathVariable("userId") String userId) {
         UserResponse userResponse = UserMapper.INSTANCE
                 .userToUserResponse(userService.getUser(userId));
@@ -127,7 +127,8 @@ public class UserController implements V1Api {
                     )
             }
     )
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER')")
+    @PostMapping(value = "/v1/users", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest,
                                                    HttpServletRequest request) {
         Transaction transaction = TransactionUtil.crearTransaccion(request, JwtExtractUserUtil.extractUserDbId());
@@ -155,7 +156,8 @@ public class UserController implements V1Api {
                     )
             }
     )
-    @DeleteMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(value = "/v1/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DeleteResponse> deleteUser(@PathVariable("userId") String userId) {
         return new ResponseEntity<>(userService.deleteUser(userId), HttpStatus.OK);
     }
@@ -187,7 +189,8 @@ public class UserController implements V1Api {
                     )
             }
     )
-    @PutMapping(value = "/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER')")
+    @PutMapping(value = "/v1/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserResponse> editUser(@PathVariable("userId") String userId,
                                                  @RequestBody UserRequest userRequest, HttpServletRequest request) {
         Transaction transaccion = TransactionUtil.crearTransaccion(request, JwtExtractUserUtil.extractUserDbId());
@@ -220,7 +223,8 @@ public class UserController implements V1Api {
                     )
             }
     )
-    @PostMapping(value = "/search", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER_MANAGER', 'VIEWER')")
+    @PostMapping(value = "/v1/users/search", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Page<UserResponse>> searchUsers(@RequestBody SearchRequest searchRequest) {
         Page<UserResponse> search = userService.listUsersSearch(searchRequest).map(UserMapper.INSTANCE::userToUserResponse);
         return new ResponseEntity<>(search, HttpStatus.OK);

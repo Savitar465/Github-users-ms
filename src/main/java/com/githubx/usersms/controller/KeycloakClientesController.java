@@ -9,6 +9,7 @@ import org.keycloak.representations.idm.ClientRepresentation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import java.util.List;
  * Controller to manage operations related to clients in Keycloak.
  * Exposes RESTful endpoints to interact with the client management service.
  */
+@PreAuthorize("hasRole('ADMIN')")
 @RestController
 @RequestMapping("v1/keycloak/clients")
 public class KeycloakClientesController {

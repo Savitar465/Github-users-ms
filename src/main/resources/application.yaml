@@ -29,6 +29,12 @@ spring:
           issuer-uri: ${KEYCLOAK_ISSUER_URI:https://keycloakqa.apps.gob.bo/realms/test}
           jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:https://keycloakqa.apps.gob.bo/realms/test/protocol/openid-connect/certs}
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
 logging:
   level:
     org:
@@ -40,5 +46,9 @@ logging:
 keycloak-client:
   server-url: ${KEYCLOAK_SERVER_URL:https://keycloakqa.apps.gob.bo}
   realm: ${KEYCLOAK_REALM:test}
+  # Admin client — used for server-to-server Keycloak Admin API calls (client_credentials grant)
   client: ${KEYCLOAK_ADMIN_CLIENT:admin-java}
   client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:change_me}
+  # Login client — must have "Direct Access Grants" enabled in Keycloak (password grant)
+  login-client: ${KEYCLOAK_CLIENT_ID:ms-users}
+  login-client-secret: ${KEYCLOAK_CLIENT_SECRET:change_me}
