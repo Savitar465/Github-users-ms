@@ -1,70 +1,76 @@
 package com.githubx.usersms.config.security;
 
-import jakarta.annotation.PostConstruct;
-import org.keycloak.adapters.authorization.integration.jakarta.ServletPolicyEnforcerFilter;
-import org.keycloak.representations.adapters.config.PolicyEnforcerConfig;
-import org.keycloak.util.JsonSerialization;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.io.IOException;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private PolicyEnforcerConfig combinedPolicy;
+    private static final String[] PUBLIC_MATCHERS = {
+            "/v1/auth/**",
+            "/v1/equipos-users/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/v3/api-docs.yaml",
+            "/webjars/**",
+            "/keycloak/user/create",
+            "/v1/users/disponible/**",
+            "/actuator/**"
+    };
 
-    @PostConstruct
-    public void initPolicies() {
-        try {
-            PolicyEnforcerConfig policy = JsonSerialization.readValue(getClass().getResourceAsStream("/policy-enforcer-allow.json"),
-                    PolicyEnforcerConfig.class);
-            PolicyEnforcerConfig policyUsers = JsonSerialization.readValue(getClass().getResourceAsStream("/policy-enforcer-usuarios.json"),
-                    PolicyEnforcerConfig.class);
-            PolicyEnforcerConfig policyRoles = JsonSerialization.readValue(getClass().getResourceAsStream("/policy-enforcer-roles.json"),
-                    PolicyEnforcerConfig.class);
-            policy.getPaths().addAll(policyRoles.getPaths());
-            policy.getPaths().addAll(policyUsers.getPaths());
-            this.combinedPolicy = policy;
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Error loading policy files", e);
-        }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
-    public PolicyEnforcerConfig combinedPolicyConfig() {
-        return this.combinedPolicy;
+    public KeycloakLoginFilter keycloakLoginFilter(AuthenticationManager authenticationManager,
+                                                   ObjectMapper objectMapper) {
+        return new KeycloakLoginFilter(authenticationManager, objectMapper);
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                            JwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
-        http.addFilterAfter(createPolicyEnforcerFilter(), BearerTokenAuthenticationFilter.class);
-        http.oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
-        );
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-        http.cors(AbstractHttpConfigurer::disable);
-        http.csrf(AbstractHttpConfigurer::disable);
+                                            JwtAuthConverter jwtAuthConverter,
+                                            KeycloakLoginFilter keycloakLoginFilter,
+                                            KeycloakLogoutHandler keycloakLogoutHandler) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(PUBLIC_MATCHERS).permitAll()
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(keycloakLoginFilter, UsernamePasswordAuthenticationFilter.class)
+            .logout(logout -> logout
+                .logoutRequestMatcher(request -> "POST".equalsIgnoreCase(request.getMethod())
+                        && "/v1/auth/logout".equals(request.getRequestURI()))
+                .addLogoutHandler(keycloakLogoutHandler)
+                .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
+                .permitAll()
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter))
+                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+            )
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .cors(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable);
+
         return http.build();
-    }
-
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter() {
-        return new JwtAuthenticationConverter();
-    }
-
-    private ServletPolicyEnforcerFilter createPolicyEnforcerFilter() {
-        return new ServletPolicyEnforcerFilter(httpRequest -> combinedPolicyConfig());
     }
 }
