@@ -3,6 +3,10 @@ application-description: '@project.description@'
 server:
   port: ${SERVER_PORT:8081}
 
+grpc:
+  server:
+    port: ${GRPC_PORT:9092}
+
 spring:
   config:
     import: optional:file:.env[.properties]
