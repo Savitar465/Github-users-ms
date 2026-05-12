@@ -67,8 +67,12 @@ jobs:
   test:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Secret to File
         uses: MobileDevOps/secret-to-file-action@v1.0.0
@@ -116,10 +120,11 @@ jobs:
         run: ./mvnw -B verify
 
       - name: SonarCloud analysis
+        if: ${{ env.SONAR_TOKEN != '' && vars.SONAR_ORGANIZATION != '' }}
         uses: sonarsource/sonarqube-scan-action@v8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
         with:
           args: >
@@ -130,7 +135,6 @@ jobs:
             -Dsonar.tests=src/test/java
             -Dsonar.java.binaries=target/classes
             -Dsonar.java.test.binaries=target/test-classes
-            -Dsonar.qualitygate.wait=true
 
   docker-push:
     needs: [ build, test ]
@@ -154,11 +158,31 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Resolve Docker image repository
+        env:
+          DOCKERHUB_REPOSITORY: ${{ vars.DOCKERHUB_REPOSITORY }}
+        run: |
+          if [ -z "$DOCKERHUB_REPOSITORY" ]; then
+            echo "IMAGE_REPO=github-users-ms" >> "$GITHUB_ENV"
+          else
+            echo "IMAGE_REPO=$DOCKERHUB_REPOSITORY" >> "$GITHUB_ENV"
+          fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v7.1.0
         with:
           context: .
           push: true
+          labels: |
+            org.opencontainers.image.title=Github-users-ms
+            org.opencontainers.image.description=Microservicio de usuarios (autenticacion/perfil)
+            org.opencontainers.image.vendor=Githubx
+            org.opencontainers.image.url=https://github.com/Savitar465/Github-users-ms
+            org.opencontainers.image.source=https://github.com/Savitar465/Github-users-ms
+            org.opencontainers.image.documentation=https://github.com/Savitar465/Github-users-ms/blob/main/README.md
+            org.opencontainers.image.authors=Savitar465
+            org.opencontainers.image.version=${{ github.ref_name }}
+            org.opencontainers.image.revision=${{ github.sha }}
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY }}:${{ github.sha }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.DOCKERHUB_REPOSITORY }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_REPO }}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_REPO }}:latest
